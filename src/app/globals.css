@@ -1,5 +1,84 @@
 @import "tailwindcss";
 
+
+/* Regular font (400) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-Regular.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-Regular.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Medium font (500) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-Medium.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-Medium.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* SemiBold font (600) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-SemiBold.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-SemiBold.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Bold font (700) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-Bold.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-Bold.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Extra Bold font (800) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-ExtraBold.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-ExtraBold.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* Extra Bold Italic font (800) */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-ExtBdIta.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-ExtBdIta.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-ExtBdIta.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+
+/* Extra Black Italic font (900) - Boldest variant */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-ExtBlkItaa.woff2') format('woff2'),
+       url('/fonts/HelveticaNowDisplay-ExtBlkItaa.woff') format('woff'),
+       url('/fonts/HelveticaNowDisplay-ExtBlkItaa.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+}
+
+/* Apply the font globally */
+* {
+  font-family: 'Helvetica Now Display', sans-serif;
+}
+
+
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

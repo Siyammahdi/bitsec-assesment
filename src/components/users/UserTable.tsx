@@ -1,6 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { 
+  MdSearch, 
+  MdPersonAdd, 
+  MdEdit, 
+  MdDelete,
+  MdAdminPanelSettings,
+  MdEditNote,
+  MdVisibility,
+  MdCheckCircle,
+  MdPending,
+  MdBlock
+} from "react-icons/md";
 
 export type User = {
   id: string;
@@ -14,16 +26,35 @@ type Props = {
   initialUsers?: User[];
 };
 
-const DEFAULT_USERS: User[] = [
-  { id: "1", name: "Ava Fisher", email: "ava@bitsec.io", role: "Admin", status: "Active" },
-  { id: "2", name: "Liam Carter", email: "liam@bitsec.io", role: "Editor", status: "Active" },
-  { id: "3", name: "Noah Singh", email: "noah@bitsec.io", role: "Viewer", status: "Invited" },
-  { id: "4", name: "Emma Chen", email: "emma@bitsec.io", role: "Editor", status: "Active" },
-  { id: "5", name: "Mia Rossi", email: "mia@bitsec.io", role: "Viewer", status: "Suspended" },
-];
+const DEFAULT_USERS: User[] = [];
 
 export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
   const [users, setUsers] = useState<User[]>(initialUsers);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/users", { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load users: ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setUsers(data.users as User[]);
+        }
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message ?? "Failed to load users");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState<keyof User>("name");
   const [sortAsc, setSortAsc] = useState(true);
@@ -63,23 +94,61 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
     setUsers((list) => list.filter((u) => u.id !== id));
   }
 
+  const getRoleIcon = (role: string) => {
+    switch (role) {
+      case "Admin":
+        return <MdAdminPanelSettings className="h-4 w-4" />;
+      case "Editor":
+        return <MdEditNote className="h-4 w-4" />;
+      case "Viewer":
+        return <MdVisibility className="h-4 w-4" />;
+      default:
+        return <MdVisibility className="h-4 w-4" />;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Active":
+        return <MdCheckCircle className="h-4 w-4 text-emerald-500" />;
+      case "Invited":
+        return <MdPending className="h-4 w-4 text-amber-500" />;
+      case "Suspended":
+        return <MdBlock className="h-4 w-4 text-rose-500" />;
+      default:
+        return <MdCheckCircle className="h-4 w-4" />;
+    }
+  };
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-1 ring-black/5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-lg font-semibold text-slate-900">Users</div>
         <div className="flex items-center gap-2">
-          <input
-            value={query}
-            onChange={(e) => {
-              setPage(1);
-              setQuery(e.target.value);
-            }}
-            placeholder="Search users"
-            className="w-56 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-400"
-          />
-          <button className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-500">Add user</button>
+          <div className="relative">
+            <MdSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              value={query}
+              onChange={(e) => {
+                setPage(1);
+                setQuery(e.target.value);
+              }}
+              placeholder="Search users"
+              className="w-56 rounded-lg border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-400"
+            />
+          </div>
+          <button className="flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-500">
+            <MdPersonAdd className="h-4 w-4" />
+            Add user
+          </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {error}
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] table-auto border-collapse">
@@ -101,19 +170,25 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 text-sm">
-            {current.map((u) => (
+            {loading && (
+              <tr>
+                <td colSpan={5} className="px-3 py-12 text-center text-slate-500">Loading users…</td>
+              </tr>
+            )}
+            {!loading && current.map((u) => (
               <tr key={u.id} className="hover:bg-gradient-to-r hover:from-violet-50">
                 <td className="px-3 py-3 font-medium text-slate-800">{u.name}</td>
                 <td className="px-3 py-3 text-slate-600">{u.email}</td>
                 <td className="px-3 py-3">
-                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700">
+                  <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700">
+                    {getRoleIcon(u.role)}
                     {u.role}
                   </span>
                 </td>
                 <td className="px-3 py-3">
                   <span
                     className={
-                      "rounded-full px-3 py-1 text-[11px] " +
+                      "flex items-center gap-2 rounded-full px-3 py-1 text-[11px] " +
                       (u.status === "Active"
                         ? "bg-emerald-100 text-emerald-700"
                         : u.status === "Invited"
@@ -121,23 +196,26 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
                         : "bg-rose-100 text-rose-700")
                     }
                   >
+                    {getStatusIcon(u.status)}
                     {u.status}
                   </span>
                 </td>
-                <td className="px-3 py-3 text-right">
-                  <button className="mr-2 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm hover:bg-slate-100">
+                <td className="px-3 py-3 text-right flex justify-end">
+                  <button className="mr-2 flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm hover:bg-slate-100">
+                    <MdEdit className="h-3 w-3" />
                     Edit
                   </button>
                   <button
                     onClick={() => removeUser(u.id)}
-                    className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1 text-xs text-rose-700 shadow-sm hover:bg-rose-100"
+                    className="flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1 text-xs text-rose-700 shadow-sm hover:bg-rose-100"
                   >
+                    <MdDelete className="h-3 w-3" />
                     Delete
                   </button>
                 </td>
               </tr>
             ))}
-            {current.length === 0 && (
+            {!loading && current.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-3 py-12 text-center text-slate-500">
                   No users found.
