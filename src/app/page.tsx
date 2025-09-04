@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { MotionFade } from "@/components/global/Motion";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
 
 export default function Home() {
   return (
     <MotionFade>
-      <div className="grid place-items-center h-full pb-20 text-center text-slate-600">
+      <div className="grid items-center h-screen my-auto pb-20 text-center text-slate-600">
         <div>
           <h1 className="text-7xl font-semibold text-slate-900">Welcome</h1>
           <p className="mt-2  text-2xl">
@@ -25,8 +26,9 @@ export default function Home() {
 
           <Link
             href="/dashboard"
-            className="mt-12 inline-flex rounded-xl bg-violet-600 px-20 py-4  font-medium text-white hover:bg-violet-500"
+            className="mt-12 flex w-fit mx-auto items-center gap-2 rounded-xl bg-violet-600 px-20 py-4  font-medium text-white hover:bg-violet-500"
           >
+            <TbLayoutDashboardFilled size={20} />
             Open Dashboard
           </Link>
         </div>
