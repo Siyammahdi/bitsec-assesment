@@ -3,25 +3,32 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  MdSearch, 
-  MdPersonAdd, 
-  MdEdit, 
-  MdDelete,
-  MdAdminPanelSettings,
-  MdEditNote,
-  MdVisibility,
-  MdCheckCircle,
-  MdPending,
-  MdBlock
+import {
+  MdSearch,
+  MdPersonAdd,
+  MdEdit,
+  MdDelete
 } from "react-icons/md";
 
 export type User = {
-  id: string;
+  id: number;
   name: string;
+  username: string;
   email: string;
-  role: "Admin" | "Editor" | "Viewer";
-  status: "Active" | "Invited" | "Suspended";
+  phone: string;
+  website: string;
+  address: {
+    street: string;
+    suite: string;
+    city: string;
+    zipcode: string;
+    geo: { lat: string; lng: string };
+  };
+  company: {
+    name: string;
+    catchPhrase: string;
+    bs: string;
+  };
 };
 
 type Props = {
@@ -59,23 +66,24 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
     };
   }, []);
   const [query, setQuery] = useState("");
-  const [sortKey, setSortKey] = useState<keyof User>("name");
+  const [sortKey, setSortKey] = useState<"name" | "username" | "email" | "phone" | "company">("name");
   const [sortAsc, setSortAsc] = useState(true);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const result = users.filter(
-      (u) =>
+    const result = users.filter((u) => {
+      return (
         u.name.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.role.toLowerCase().includes(q) ||
-        u.status.toLowerCase().includes(q)
-    );
+        u.email.toLowerCase().includes(q)
+      );
+    });
     return result.sort((a, b) => {
-      const aVal = String(a[sortKey]).toLowerCase();
-      const bVal = String(b[sortKey]).toLowerCase();
+      const aVal =
+        sortKey === "company" ? a.company?.name?.toLowerCase() ?? "" : String(a[sortKey]).toLowerCase();
+      const bVal =
+        sortKey === "company" ? b.company?.name?.toLowerCase() ?? "" : String(b[sortKey]).toLowerCase();
       if (aVal < bVal) return sortAsc ? -1 : 1;
       if (aVal > bVal) return sortAsc ? 1 : -1;
       return 0;
@@ -85,7 +93,7 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  function toggleSort(key: keyof User) {
+  function toggleSort(key: "name" | "username" | "email" | "phone" | "company") {
     if (key === sortKey) setSortAsc((s) => !s);
     else {
       setSortKey(key);
@@ -93,35 +101,11 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
     }
   }
 
-  function removeUser(id: string) {
-    setUsers((list) => list.filter((u) => u.id !== id));
+  function removeUser(id: string | number) {
+    setUsers((list) => list.filter((u) => String(u.id) !== String(id)));
   }
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "Admin":
-        return <MdAdminPanelSettings className="h-4 w-4" />;
-      case "Editor":
-        return <MdEditNote className="h-4 w-4" />;
-      case "Viewer":
-        return <MdVisibility className="h-4 w-4" />;
-      default:
-        return <MdVisibility className="h-4 w-4" />;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Active":
-        return <MdCheckCircle className="h-4 w-4 text-emerald-500" />;
-      case "Invited":
-        return <MdPending className="h-4 w-4 text-amber-500" />;
-      case "Suspended":
-        return <MdBlock className="h-4 w-4 text-rose-500" />;
-      default:
-        return <MdCheckCircle className="h-4 w-4" />;
-    }
-  };
+  // role/status removed in new data model
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-1 ring-black/5">
@@ -135,7 +119,7 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
                 setPage(1);
                 setQuery(e.target.value);
               }}
-              placeholder="Search users"
+              placeholder="Search by name or email"
               className="w-96 rounded-lg border border-slate-200 bg-white pl-10 pr-3 py-2 text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-400"
             />
           </div>
@@ -159,14 +143,17 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
               <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("name")}>
                 Name {sortKey === "name" && (sortAsc ? "↑" : "↓")}
               </th>
+              <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("username")}>
+                Username {sortKey === "username" && (sortAsc ? "↑" : "↓")}
+              </th>
               <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("email")}>
                 Email {sortKey === "email" && (sortAsc ? "↑" : "↓")}
               </th>
-              <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("role")}>
-                Role {sortKey === "role" && (sortAsc ? "↑" : "↓")}
+              <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("phone")}>
+                Phone {sortKey === "phone" && (sortAsc ? "↑" : "↓")}
               </th>
-              <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("status")}>
-                Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
+              <th className="cursor-pointer px-3 py-2" onClick={() => toggleSort("company")}>
+                Company {sortKey === "company" && (sortAsc ? "↑" : "↓")}
               </th>
               <th className="px-3 py-2 text-right">Actions</th>
             </tr>
@@ -188,35 +175,17 @@ export function UserTable({ initialUsers = DEFAULT_USERS }: Props) {
                     {u.name}
                   </Link>
                 </td>
+                <td className="px-3 py-3 text-slate-600">{u.username}</td>
                 <td className="px-3 py-3 text-slate-600">{u.email}</td>
-                <td className="px-3 py-3">
-                  <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-700">
-                    {getRoleIcon(u.role)}
-                    {u.role}
-                  </span>
-                </td>
-                <td className="px-3 py-3">
-                  <span
-                    className={
-                      "flex items-center gap-2 rounded-full px-3 py-1 text-[11px] " +
-                      (u.status === "Active"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : u.status === "Invited"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-rose-100 text-rose-700")
-                    }
-                  >
-                    {getStatusIcon(u.status)}
-                    {u.status}
-                  </span>
-                </td>
+                <td className="px-3 py-3 text-slate-600">{u.phone}</td>
+                <td className="px-3 py-3 text-slate-700">{u.company?.name}</td>
                 <td className="px-3 py-3 text-right flex justify-end" onClick={(e) => e.stopPropagation()}>
                   <button className="mr-2 flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-700 shadow-sm hover:bg-slate-100">
                     <MdEdit className="h-3 w-3" />
                     Edit
                   </button>
                   <button
-                    onClick={() => removeUser(u.id)}
+                    onClick={() => removeUser(String(u.id))}
                     className="flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1 text-xs text-rose-700 shadow-sm hover:bg-rose-100"
                   >
                     <MdDelete className="h-3 w-3" />

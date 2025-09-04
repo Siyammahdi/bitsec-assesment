@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { BsPeopleFill } from "react-icons/bs";
 import { 
-  MdDashboard, 
-  MdPeople, 
-  MdSettings,
   MdSecurity,
   MdCheckCircle
 } from "react-icons/md";
+import { RiSettings4Fill } from "react-icons/ri";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
 
 type NavItem = {
   label: string;
@@ -22,9 +22,8 @@ export function Sidebar() {
 
   const navItems: NavItem[] = useMemo(
     () => [
-      { label: "Dashboard", href: "/dashboard", icon: MdDashboard },
-      { label: "Users", href: "/users", icon: MdPeople },
-      { label: "Settings", href: "/#settings", icon: MdSettings },
+      { label: "Dashboard", href: "/dashboard", icon: TbLayoutDashboardFilled },
+      { label: "Users", href: "/users", icon: BsPeopleFill },
     ],
     []
   );
@@ -35,7 +34,7 @@ export function Sidebar() {
         <MdSecurity className="h-8 w-8 text-violet-600" />
         BitSec
       </div>
-      <nav className="px-4 py-2 space-y-1">
+      <nav className="px-4 py-2 space-y-1 font-medium">
         {navItems.map((item) => {
           const active = pathname === item.href || (item.href === "/" && pathname === "/");
           const IconComponent = item.icon;
@@ -46,11 +45,11 @@ export function Sidebar() {
               className={
                 "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors " +
                 (active
-                  ? "bg-gradient-to-r from-violet-50 to-white text-violet-700 ring-1 ring-violet-100"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100")
+                  ? "bg-gradient-to-r from-violet-200 to-purple-200  text-violet-700 ring-1 ring-violet-100"
+                  : "text-slate-600 hover:text-violet-900 hover:bg-slate-100")
               }
             >
-              <IconComponent className={`h-5 w-5 ${active ? "text-violet-600" : "text-slate-500 group-hover:text-slate-700"}`} />
+              <IconComponent className={`h-5 w-5 ${active ? "text-violet-600" : "text-slate-500 group-hover:text-violet-700"}`} />
               <span>{item.label}</span>
             </Link>
           );
