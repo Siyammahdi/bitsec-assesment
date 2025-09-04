@@ -5,7 +5,7 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 export default function Home() {
   return (
     <MotionFade>
-      <div className="grid items-center h-screen my-auto pb-20 text-center text-slate-600">
+      <div className="grid items-center h-screen my-auto  text-center text-slate-600">
         <div>
           <h1 className="text-7xl font-semibold text-slate-900">Welcome</h1>
           <p className="mt-2  text-2xl">
