@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  MdPeople, 
-  MdCheckCircle, 
-  MdPersonAdd, 
+import { BiLogoGmail } from "react-icons/bi";
+import { FaCity } from "react-icons/fa";
+import { HiOfficeBuilding } from "react-icons/hi";
+import {
+  MdPeople,
+  MdCheckCircle,
+  MdPersonAdd,
   MdBlock,
-  MdTrendingUp
+  MdTrendingUp,
 } from "react-icons/md";
 
 type Props = {
@@ -45,6 +48,12 @@ export function KpiCard({ label, value, accent = "violet" }: Props) {
     switch (label.toLowerCase()) {
       case "total users":
         return <MdPeople className="h-6 w-6" />;
+      case "companies":
+        return <HiOfficeBuilding className="h-6 w-6" />;
+      case "cities":
+        return <FaCity className="h-6 w-6" />;
+      case "gmail users":
+        return <BiLogoGmail className="h-6 w-6" />;
       case "active":
         return <MdCheckCircle className="h-6 w-6" />;
       case "invites":
@@ -67,7 +76,7 @@ export function KpiCard({ label, value, accent = "violet" }: Props) {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-1 ring-black/5">
-      <div className="flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between">
         <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</div>
         <div className={iconColorClass}>
           {getIcon()}
